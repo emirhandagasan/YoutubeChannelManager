@@ -12,7 +12,7 @@ using YoutubeChannelManager.Data;
 namespace YoutubeChannelManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250807162026_InitialCreate")]
+    [Migration("20250812130544_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

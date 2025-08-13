@@ -84,12 +84,21 @@ namespace YoutubeChannelManager.Repositories
 
             if (channelModel == null)
             {
-                return null;    
+                return null;
             }
 
             _db.Channels.Remove(channelModel);
             await _db.SaveChangesAsync();
             return channelModel;
         }
+
+
+        public async Task<bool> ExistsByNameAsync(string name)
+        {
+            return await _db.Channels
+                .AnyAsync(c => c.ChannelName.ToLower() == name.ToLower());
+        }
+
+
     }
 }

@@ -12,6 +12,6 @@ namespace YoutubeChannelManager.Models
         public string Category { get; set; }
         public int Subscribers { get; set; }
         public bool IsActive { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

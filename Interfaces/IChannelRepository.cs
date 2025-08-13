@@ -14,5 +14,6 @@ namespace YoutubeChannelManager.Interfaces
         Task<Channel> CreateAsync(Channel channelModel);
         Task<Channel?> UpdateAsync(Guid id, UpdateChannelRequestDto channelRequestDto);
         Task<Channel?> DeleteAsync(Guid id);
+        Task<bool> ExistsByNameAsync(string name);
     }
 }

@@ -17,11 +17,12 @@ namespace YoutubeChannelManager.Controllers
     public class ChannelsController : ControllerBase
     {
         private readonly IChannelRepository _channelRepository;
+        private readonly IFileService _fileService;
 
-        public ChannelsController(IChannelRepository channelRepository)
+        public ChannelsController(IChannelRepository channelRepository, IFileService fileService)
         {
             _channelRepository = channelRepository;
-
+            _fileService = fileService;
         }
 
 
@@ -105,6 +106,34 @@ namespace YoutubeChannelManager.Controllers
             }
 
             return NoContent();
+        }
+
+
+        [HttpPost("import/csv")]
+        public async Task<IActionResult> ImportCsv(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File is empty or not provided.");
+
+            if (!Path.GetExtension(file.FileName).Equals(".csv", StringComparison.OrdinalIgnoreCase))
+                return BadRequest("Only .csv files are supported.");
+
+            await _fileService.ImportCsvAsync(file.OpenReadStream());
+            return Ok("CSV File imported successfully.");
+        }
+        
+
+        [HttpPost("import/excel")]
+        public async Task<IActionResult> ImportXlsx(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File is empty or not provided.");
+
+            if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+                return BadRequest("Only .xlsx files are supported.");
+
+            await _fileService.ImportXlsxAsync(file.OpenReadStream());
+                return Ok("XLSX file imported successfully.");
         }
     }
 }

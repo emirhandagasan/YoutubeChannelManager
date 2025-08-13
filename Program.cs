@@ -13,6 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllers();
 builder.Services.AddScoped<IChannelRepository, ChannelRepository>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 
 
