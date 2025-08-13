@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using YoutubeChannelManager.DTOs;
+using YoutubeChannelManager.Helpers;
 using YoutubeChannelManager.Interfaces;
 using YoutubeChannelManager.Models;
 
@@ -121,7 +122,7 @@ namespace YoutubeChannelManager.Controllers
             await _fileService.ImportCsvAsync(file.OpenReadStream());
             return Ok("CSV File imported successfully.");
         }
-        
+
 
         [HttpPost("import/excel")]
         public async Task<IActionResult> ImportXlsx(IFormFile file)
@@ -133,7 +134,44 @@ namespace YoutubeChannelManager.Controllers
                 return BadRequest("Only .xlsx files are supported.");
 
             await _fileService.ImportXlsxAsync(file.OpenReadStream());
-                return Ok("XLSX file imported successfully.");
+            return Ok("XLSX file imported successfully.");
+        }
+
+
+        [HttpPost("import/folder/csv")]
+        public async Task<IActionResult> ImportCsvFolder([FromBody] FolderPathRequest request)
+        {
+            if (request is null || string.IsNullOrWhiteSpace(request.FolderPath))
+                return BadRequest("FolderPath is empty or not provided.");
+
+            if (!Directory.Exists(request.FolderPath))
+                return BadRequest("Folder not found.");
+
+
+            var anyCsv = Directory.EnumerateFiles(request.FolderPath, "*.csv", SearchOption.TopDirectoryOnly).Any();
+            if (!anyCsv)
+                return BadRequest("No .csv files found in the provided folder.");
+
+            await _fileService.ImportCsvFolderAsync(request.FolderPath);
+            return Ok("CSV files from folder imported successfully.");
+        }
+
+
+        [HttpPost("import/folder/xlsx")]
+        public async Task<IActionResult> ImportXlsxFolder([FromBody] FolderPathRequest request)
+        {
+            if (request is null || string.IsNullOrWhiteSpace(request.FolderPath))
+                return BadRequest("FolderPath is empty or not provided.");
+
+            if (!Directory.Exists(request.FolderPath))
+                return BadRequest("Folder not found.");
+
+            var anyXlsx = Directory.EnumerateFiles(request.FolderPath, "*.xlsx", SearchOption.TopDirectoryOnly).Any();
+            if (!anyXlsx)
+                return BadRequest("No .xlsx files found in the provided folder.");
+
+            await _fileService.ImportXlsxFolderAsync(request.FolderPath);
+            return Ok("XLSX files from folder imported successfully.");
         }
     }
 }

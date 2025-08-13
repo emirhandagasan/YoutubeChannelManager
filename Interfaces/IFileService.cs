@@ -9,5 +9,7 @@ namespace YoutubeChannelManager.Interfaces
     {
         Task ImportCsvAsync(Stream fileStream);
         Task ImportXlsxAsync(Stream fileStream);
+        Task ImportCsvFolderAsync(string folderPath);
+        Task ImportXlsxFolderAsync(string folderPath); 
     }
 }
