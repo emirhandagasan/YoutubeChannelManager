@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -172,6 +173,31 @@ namespace YoutubeChannelManager.Controllers
 
             await _fileService.ImportXlsxFolderAsync(request.FolderPath);
             return Ok("XLSX files from folder imported successfully.");
+        }
+
+
+        [HttpGet("export")]
+        public async Task<IActionResult> ExportChannels(
+        [FromQuery] string? search,
+        [FromQuery] string? category,
+        [FromQuery] string? sort,
+        [FromQuery] string format = "csv")
+        {
+            var channels = await _channelRepository.GetAllAsync(search, category, sort);
+
+            if (format.ToLower() == "csv")
+            {
+                var csv = _fileService.ExportChannelsToCsv(channels);
+                var bytes = Encoding.UTF8.GetBytes(csv);
+                return File(bytes, "text/csv", "channels.csv");
+            }
+            else if (format.ToLower() == "xlsx")
+            {
+                var xlsxBytes = _fileService.ExportChannelsToXlsx(channels);
+                return File(xlsxBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "channels.xlsx");
+            }
+            else
+                return BadRequest("Invalid format. Use 'csv' or 'xlsx'.");
         }
     }
 }
