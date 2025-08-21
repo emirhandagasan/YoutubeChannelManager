@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using YoutubeChannelManager.Data;
 using YoutubeChannelManager.DTOs;
+using YoutubeChannelManager.Helpers;
 using YoutubeChannelManager.Interfaces;
 using YoutubeChannelManager.Models;
 
@@ -20,27 +21,39 @@ namespace YoutubeChannelManager.Repositories
         }
 
 
-        public async Task<IEnumerable<Channel>> GetAllAsync(string? search, string? category, string? sort)
+        public async Task<IEnumerable<Channel>> GetAllAsync(QueryObject query)
         {
-            var query = _db.Channels.AsQueryable();
+            var stocks = _db.Channels.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(search))
-                query = query.Where(c => c.ChannelName.Contains(search));
-
-            if (!string.IsNullOrWhiteSpace(category))
-                query = query.Where(c => c.Category == category);
-
-            if (!string.IsNullOrWhiteSpace(sort))
+            if (!string.IsNullOrWhiteSpace(query.ChannelName))
             {
-                query = sort switch
-                {
-                    "subscribers_asc" => query.OrderBy(c => c.Subscribers),
-                    "subscribers_desc" => query.OrderByDescending(c => c.Subscribers),
-                    _ => query
-                };
+                stocks = stocks.Where(c => c.ChannelName.Contains(query.ChannelName));
             }
 
-            return await query.ToListAsync();
+            if (!string.IsNullOrWhiteSpace(query.Category))
+            {
+                stocks = stocks.Where(c => c.Category.Contains(query.Category));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if (query.SortBy.Equals("ChannelName", StringComparison.OrdinalIgnoreCase))
+                {
+                    stocks = query.IsDecsending ? stocks.OrderByDescending(c => c.ChannelName) : stocks.OrderBy(c => c.ChannelName);
+                }
+                else if (query.SortBy.Equals("Subscribers", StringComparison.OrdinalIgnoreCase))
+                {
+                    stocks = query.IsDecsending ? stocks.OrderByDescending(c => c.Subscribers) : stocks.OrderBy(c => c.Subscribers);
+                }
+                else if (query.SortBy.Equals("Category", StringComparison.OrdinalIgnoreCase))
+                {
+                    stocks = query.IsDecsending ? stocks.OrderByDescending(c => c.Category) : stocks.OrderBy(c => c.Category);
+                }
+            }
+
+            var skipNumber = (query.PageNumber - 1) * query.PageSize;
+
+            return await stocks.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
 

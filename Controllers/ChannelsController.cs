@@ -29,9 +29,9 @@ namespace YoutubeChannelManager.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? search, [FromQuery] string? category, [FromQuery] string? sort)
+        public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
-            var result = await _channelRepository.GetAllAsync(search, category, sort);
+            var result = await _channelRepository.GetAllAsync(query);
             return Ok(result);
         }
 
@@ -53,6 +53,10 @@ namespace YoutubeChannelManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateChannelRequestDto channelDto)
         {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+                
             var channelModel = new Channel
             {
                 ChannelName = channelDto.ChannelName,
@@ -78,6 +82,10 @@ namespace YoutubeChannelManager.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateChannelRequestDto updateChannelRequestDto)
         {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+                
             var channelModel = await _channelRepository.UpdateAsync(id, updateChannelRequestDto);
 
             if (channelModel == null)
@@ -178,12 +186,10 @@ namespace YoutubeChannelManager.Controllers
 
         [HttpGet("export")]
         public async Task<IActionResult> ExportChannels(
-        [FromQuery] string? search,
-        [FromQuery] string? category,
-        [FromQuery] string? sort,
+        [FromQuery] QueryObject query,
         [FromQuery] string format = "csv")
         {
-            var channels = await _channelRepository.GetAllAsync(search, category, sort);
+            var channels = await _channelRepository.GetAllAsync(query);
 
             if (format.ToLower() == "csv")
             {

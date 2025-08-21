@@ -48,10 +48,12 @@ namespace YoutubeChannelManager.Repositories
 
             foreach (var record in records)
             {
+                bool exists = await _channelRepository.ExistsByNameAsync(record.ChannelName);
+
                 if (string.IsNullOrWhiteSpace(record.ChannelName))
                     continue;
 
-                if (await _channelRepository.ExistsByNameAsync(record.ChannelName))
+                if (exists)
                     continue;
 
                 record.Id = Guid.NewGuid();
