@@ -1,6 +1,0 @@
-@YoutubeChannelManager.PL_HostAddress = http://localhost:5170
-
-GET {{YoutubeChannelManager.PL_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
