@@ -1,0 +1,15 @@
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/bin/Debug/net8.0/YoutubeChannelManager.DAL.deps.json
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/bin/Debug/net8.0/YoutubeChannelManager.DAL.runtimeconfig.json
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/bin/Debug/net8.0/YoutubeChannelManager.DAL.dll
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/bin/Debug/net8.0/YoutubeChannelManager.DAL.pdb
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/YoutubeChannelManager.DAL.csproj.AssemblyReference.cache
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/YoutubeChannelManager.DAL.GeneratedMSBuildEditorConfig.editorconfig
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/YoutubeChannelManager.DAL.AssemblyInfoInputs.cache
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/YoutubeChannelManager.DAL.AssemblyInfo.cs
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/YoutubeChannelManager.DAL.csproj.CoreCompileInputs.cache
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/YoutubeChannelManager.DAL.dll
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/refint/YoutubeChannelManager.DAL.dll
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/YoutubeChannelManager.DAL.pdb
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/YoutubeChannelManager.DAL.genruntimeconfig.cache
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/ref/YoutubeChannelManager.DAL.dll
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.DAL/obj/Debug/net8.0/YoutubeChannelManager.DAL.sourcelink.json

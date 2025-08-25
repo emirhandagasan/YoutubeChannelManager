@@ -1,0 +1,16 @@
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/bin/Debug/net8.0/YoutubeChannelManager.BLL.deps.json
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/bin/Debug/net8.0/YoutubeChannelManager.BLL.dll
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/bin/Debug/net8.0/YoutubeChannelManager.BLL.pdb
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/bin/Debug/net8.0/YoutubeChannelManager.DAL.dll
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/bin/Debug/net8.0/YoutubeChannelManager.DAL.pdb
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/YoutubeChannelManager.BLL.csproj.AssemblyReference.cache
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/YoutubeChannelManager.BLL.GeneratedMSBuildEditorConfig.editorconfig
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/YoutubeChannelManager.BLL.AssemblyInfoInputs.cache
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/YoutubeChannelManager.BLL.AssemblyInfo.cs
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/YoutubeChannelManager.BLL.csproj.CoreCompileInputs.cache
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/YoutubeC.F08CB17C.Up2Date
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/YoutubeChannelManager.BLL.dll
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/refint/YoutubeChannelManager.BLL.dll
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/YoutubeChannelManager.BLL.pdb
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/ref/YoutubeChannelManager.BLL.dll
+/Users/emirhandagasan/Downloads/Test/YoutubeChannelManager/YoutubeChannelManager.BLL/obj/Debug/net8.0/YoutubeChannelManager.BLL.sourcelink.json
