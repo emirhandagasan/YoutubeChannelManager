@@ -1,0 +1,7 @@
+Add-Migration InitialCreate -Project YoutubeChannelManager.DAL -StartupProject YoutubeChannelManager.PL
+Update-Database -Project YoutubeChannelManager.DAL -StartupProject YoutubeChannelManager.PL
+
+
+
+dotnet ef migrations add InitialCreate --project YoutubeChannelManager.DAL --startup-project YoutubeChannelManager.PL
+dotnet ef database update --project YoutubeChannelManager.DAL --startup-project YoutubeChannelManager.PL
