@@ -361,3 +361,19 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# macOS specific files
+.DS_Store
+
+# IDE and editor folders
+.vscode/
+.idea/
+*.iml
+
+# Log and temporary files
+*.log
+*.tmp
+
+# Local secrets & config
+appsettings.Development.json
+appsettings.Production.json

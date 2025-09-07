@@ -4,8 +4,24 @@
     <projectFile profileName="http">YoutubeChannelManager.PL/YoutubeChannelManager.PL.csproj</projectFile>
     <projectFile profileName="https">YoutubeChannelManager.PL/YoutubeChannelManager.PL.csproj</projectFile>
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="a65d5d69-08b9-488e-8305-c716438553a4" name="Changes" comment="" />
+    <list default="true" id="a65d5d69-08b9-488e-8305-c716438553a4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.YoutubeChannelManager/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.YoutubeChannelManager/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.BLL/DTOs/CreateChannelRequestDto.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.BLL/DTOs/FolderPathRequestDto.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.BLL/DTOs/UpdateChannelRequestDto.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.BLL/YoutubeChannelManager.BLL.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/YoutubeChannelManager.BLL/YoutubeChannelManager.BLL.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.DAL/Data/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/YoutubeChannelManager.DAL/Data/ApplicationDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.DAL/Migrations/ApplicationDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/YoutubeChannelManager.DAL/Migrations/ApplicationDbContextModelSnapshot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.DAL/YoutubeChannelManager.DAL.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/YoutubeChannelManager.DAL/YoutubeChannelManager.DAL.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.PL/Controllers/ChannelsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/YoutubeChannelManager.PL/Controllers/ChannelsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.PL/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/YoutubeChannelManager.PL/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.PL/YoutubeChannelManager.PL.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/YoutubeChannelManager.PL/YoutubeChannelManager.PL.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YoutubeChannelManager.PL/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/YoutubeChannelManager.PL/appsettings.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,24 +30,52 @@
   <component name="DpaMonitoringSettings">
     <option name="firstShow" value="false" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 5
-}]]></component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;emirhandagasan&quot;
+  }
+}</component>
+  <component name="GithubProjectSettings">
+    <option name="branchProtectionPatterns">
+      <list>
+        <option value="main" />
+      </list>
+    </option>
+  </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/emirhandagasan/YoutubeChannelManager.git&quot;,
+    &quot;accountId&quot;: &quot;c2849130-b260-49c5-9c81-5384fb88ee93&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="31tcH2F6GZoPeMeoFHEcPjghiN2" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.YoutubeChannelManager.PL: http.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.YoutubeChannelManager.PL: http.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;#4 on feature/mediatr-cqrs&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.YoutubeChannelManager.PL: http">
     <configuration name="YoutubeChannelManager.PL: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/YoutubeChannelManager.PL/YoutubeChannelManager.PL.csproj" />
@@ -72,6 +116,10 @@
       <option name="presentableId" value="Default" />
       <updated>1756346718450</updated>
       <workItem from="1756346720048" duration="89000" />
+      <workItem from="1756973146230" duration="2742000" />
+      <workItem from="1757173193634" duration="25000" />
+      <workItem from="1757174023200" duration="96000" />
+      <workItem from="1757181658205" duration="148000" />
     </task>
     <servers />
   </component>

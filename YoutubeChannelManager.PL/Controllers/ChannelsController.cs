@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using YoutubeChannelManager.BLL.DTOs;
@@ -25,7 +26,6 @@ using YoutubeChannelManager.DAL.Models;
 
 namespace YoutubeChannelManager.Controllers
 {
-
     [ApiController]
     [Route("api/channels")]
     public class ChannelsController : ControllerBase
@@ -64,6 +64,7 @@ namespace YoutubeChannelManager.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "SuperAdmin,Admin,Editor")]
         public async Task<IActionResult> Create([FromBody] CreateChannelRequestDto channelDto)
         {
             if (!ModelState.IsValid)
@@ -85,16 +86,17 @@ namespace YoutubeChannelManager.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "SuperAdmin,Admin,Editor")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateChannelRequestDto updateChannelRequestDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var updateChannelCommand = new UpdateChannelCommand(
-                id, 
-                updateChannelRequestDto.ChannelName, 
-                updateChannelRequestDto.Category, 
-                updateChannelRequestDto.Subscribers, 
+                id,
+                updateChannelRequestDto.ChannelName,
+                updateChannelRequestDto.Category,
+                updateChannelRequestDto.Subscribers,
                 updateChannelRequestDto.IsActive);
 
             var updated = await _mediator.Send(updateChannelCommand);
@@ -109,6 +111,7 @@ namespace YoutubeChannelManager.Controllers
 
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var deleted = await _mediator.Send(new DeleteChannelCommand(id));
@@ -122,6 +125,7 @@ namespace YoutubeChannelManager.Controllers
 
 
         [HttpPost("import/csv")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> ImportCsv(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -137,6 +141,7 @@ namespace YoutubeChannelManager.Controllers
 
 
         [HttpPost("import/excel")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> ImportXlsx(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -152,6 +157,7 @@ namespace YoutubeChannelManager.Controllers
 
 
         [HttpPost("import/folder/csv")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> ImportCsvFolder([FromBody] FolderPathRequestDto request)
         {
             if (request is null || string.IsNullOrWhiteSpace(request.FolderPath))
@@ -172,6 +178,7 @@ namespace YoutubeChannelManager.Controllers
 
 
         [HttpPost("import/folder/xlsx")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> ImportXlsxFolder([FromBody] FolderPathRequestDto request)
         {
             if (request is null || string.IsNullOrWhiteSpace(request.FolderPath))
