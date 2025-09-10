@@ -7,5 +7,6 @@ using System.Threading.Tasks;
 
 namespace YoutubeChannelManager.BLL.Features.Files.Commands.ImportXlsx
 {
-    public record ImportXlsxCommand(Stream FileStream) : IRequest;
+    public record ImportXlsxCommand(Stream FileStream) : IRequest<ImportXlsxResponse>;
 }
+

@@ -9,10 +9,10 @@ namespace YoutubeChannelManager.BLL.Interfaces
 {
     public interface IFileService
     {
-        Task ImportCsvAsync(Stream fileStream);
-        Task ImportXlsxAsync(Stream fileStream);
-        Task ImportCsvFolderAsync(string folderPath);
-        Task ImportXlsxFolderAsync(string folderPath);
+        Task<int> ImportCsvAsync(Stream fileStream);
+        Task<int> ImportXlsxAsync(Stream fileStream);
+        Task<(int ImportedCount, int ProcessedFileCount)> ImportCsvFolderAsync(string folderPath);
+        Task<(int ImportedCount, int ProcessedFileCount)> ImportXlsxFolderAsync(string folderPath);
         string ExportChannelsToCsv(IEnumerable<Channel> channels);
         byte[] ExportChannelsToXlsx(IEnumerable<Channel> channels);
     }

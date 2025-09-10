@@ -8,26 +8,44 @@ using YoutubeChannelManager.BLL.Interfaces;
 
 namespace YoutubeChannelManager.BLL.Features.Files.Queries.ExportChannels
 {
-    public class ExportChannelsHandler : IRequestHandler<ExportChannelsQuery, byte[]>
+    public class ExportChannelsQueryHandler : IRequestHandler<ExportChannelsQuery, ExportChannelsResponse>
     {
         private readonly IChannelRepository _channelRepository;
         private readonly IFileService _fileService;
 
-        public ExportChannelsHandler(IChannelRepository channelRepository, IFileService fileService)
+        public ExportChannelsQueryHandler(IChannelRepository channelRepository, IFileService fileService)
         {
             _channelRepository = channelRepository;
             _fileService = fileService;
         }
 
-        public async Task<byte[]> Handle(ExportChannelsQuery request, CancellationToken cancellationToken)
+        public async Task<ExportChannelsResponse> Handle(ExportChannelsQuery request, CancellationToken cancellationToken)
         {
             var channels = await _channelRepository.GetAllAsync(request.Query);
 
-            return request.Format.ToLower() switch
+            byte[] fileContent;
+            string fileName;
+            string contentType;
+
+            if (request.Format.ToLower() == "xlsx")
             {
-                "csv" => Encoding.UTF8.GetBytes(_fileService.ExportChannelsToCsv(channels)),
-                "xlsx" => _fileService.ExportChannelsToXlsx(channels),
-                _ => throw new ArgumentException("Invalid format. Please type 'csv' or 'xlsx'.")
+                fileContent = _fileService.ExportChannelsToXlsx(channels);
+                fileName = "channels.xlsx";
+                contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            }
+            else
+            {
+                var csv = _fileService.ExportChannelsToCsv(channels);
+                fileContent = System.Text.Encoding.UTF8.GetBytes(csv);
+                fileName = "channels.csv";
+                contentType = "text/csv";
+            }
+
+            return new ExportChannelsResponse
+            {
+                FileContent = fileContent,
+                FileName = fileName,
+                ContentType = contentType,
             };
         }
     }

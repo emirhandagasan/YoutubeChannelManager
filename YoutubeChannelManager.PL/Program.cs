@@ -1,22 +1,32 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using YoutubeChannelManager.BLL.Behaviors;
 using YoutubeChannelManager.BLL.Features.Channels.Queries.GetAllChannel;
 using YoutubeChannelManager.BLL.Interfaces;
 using YoutubeChannelManager.BLL.Repositories;
 using YoutubeChannelManager.BLL.Service;
+using YoutubeChannelManager.BLL.Validators;
 using YoutubeChannelManager.DAL.Data;
 using YoutubeChannelManager.DAL.Models;
 
 
 
+
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -50,7 +60,14 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
+
+
 builder.Services.AddControllers();
+
+builder.Services.AddValidatorsFromAssemblyContaining<CreateChannelCommandValidator>();
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
@@ -91,7 +108,6 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -103,8 +119,33 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
 app.UseRouting();
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = 400;
+        context.Response.ContentType = "application/json";
+
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+        if (exception is ValidationException validationException)
+        {
+            var errors = validationException.Errors.Select(e => new
+            {
+                e.PropertyName,
+                e.ErrorMessage
+            });
+
+            await context.Response.WriteAsJsonAsync(new { Errors = errors });
+        }
+        else
+        {
+            await context.Response.WriteAsJsonAsync(new { Error = exception?.Message });
+        }
+    });
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

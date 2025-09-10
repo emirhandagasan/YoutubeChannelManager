@@ -8,19 +8,26 @@ using YoutubeChannelManager.BLL.Interfaces;
 
 namespace YoutubeChannelManager.BLL.Features.Files.Commands.ImportCsvFolder
 {
-    public class ImportCsvFolderHandler : IRequestHandler<ImportCsvFolderCommand>
+    public class ImportCsvFolderCommandHandler : IRequestHandler<ImportCsvFolderCommand, ImportCsvFolderResponse>
     {
         private readonly IFileService _fileService;
 
-        public ImportCsvFolderHandler(IFileService fileService)
+        public ImportCsvFolderCommandHandler(IFileService fileService)
         {
             _fileService = fileService;
         }
 
-        public async Task<Unit> Handle(ImportCsvFolderCommand request, CancellationToken cancellationToken)
+        public async Task<ImportCsvFolderResponse> Handle(ImportCsvFolderCommand request, CancellationToken cancellationToken)
         {
-            await _fileService.ImportCsvFolderAsync(request.FolderPath);
-            return Unit.Value;
+            var (importedCount, processedFileCount) = await _fileService.ImportCsvFolderAsync(request.FolderPath);
+
+            return new ImportCsvFolderResponse
+            {
+                Success = true,
+                ImportedCount = importedCount,
+                ProcessedFileCount = processedFileCount,
+                Message = $"{importedCount} channels were imported from {processedFileCount} .csv files in the folder."
+            };
         }
     }
 }

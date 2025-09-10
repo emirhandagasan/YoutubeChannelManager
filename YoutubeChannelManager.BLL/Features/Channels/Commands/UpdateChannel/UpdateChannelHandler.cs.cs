@@ -10,7 +10,7 @@ using YoutubeChannelManager.DAL.Models;
 
 namespace YoutubeChannelManager.BLL.Features.Channels.Commands.UpdateChannel
 {
-    public class UpdateChannelHandler : IRequestHandler<UpdateChannelCommand, Channel?>
+    public class UpdateChannelHandler : IRequestHandler<UpdateChannelCommand, UpdateChannelResponse>
     {
         private readonly IChannelRepository _channelRepository;
 
@@ -19,9 +19,9 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Commands.UpdateChannel
             _channelRepository = channelRepository;
         }
 
-        public async Task<Channel?> Handle(UpdateChannelCommand request, CancellationToken cancellationToken)
+        public async Task<UpdateChannelResponse> Handle(UpdateChannelCommand request, CancellationToken cancellationToken)
         {
-            var dto = new UpdateChannelRequestDto
+            var updateDto = new UpdateChannelRequestDto
             {
                 ChannelName = request.ChannelName,
                 Category = request.Category,
@@ -29,7 +29,24 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Commands.UpdateChannel
                 IsActive = request.IsActive
             };
 
-            return await _channelRepository.UpdateAsync(request.Id, dto);
+            var updatedChannel = await _channelRepository.UpdateAsync(request.Id, updateDto);
+
+            if (updatedChannel == null)
+            {
+                return null;
+            }
+
+            return new UpdateChannelResponse
+            {
+                Id = updatedChannel.Id,
+                ChannelName = updatedChannel.ChannelName,
+                Category = updatedChannel.Category,
+                Subscribers = updatedChannel.Subscribers,
+                IsActive = updatedChannel.IsActive,
+            };
         }
     }
 }
+
+
+

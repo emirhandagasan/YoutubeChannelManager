@@ -8,5 +8,13 @@ using YoutubeChannelManager.DAL.Models;
 
 namespace YoutubeChannelManager.BLL.Features.Channels.Queries.GetByIdChannel
 {
-    public record GetChannelByIdQuery(Guid Id) : IRequest<Channel?>;
+    public class GetChannelByIdQuery : IRequest<GetChannelByIdResponse?>
+    {
+        public Guid Id { get; }
+
+        public GetChannelByIdQuery(Guid id)
+        {
+            Id = id;
+        }
+    }
 }

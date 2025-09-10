@@ -8,5 +8,13 @@ using YoutubeChannelManager.DAL.Models;
 
 namespace YoutubeChannelManager.BLL.Features.Channels.Commands.DeleteChannel
 {
-    public record DeleteChannelCommand(Guid Id) : IRequest<Channel?>;
+    public class DeleteChannelCommand : IRequest<DeleteChannelResponse?>
+    {
+        public Guid Id { get; }
+
+        public DeleteChannelCommand(Guid id)
+        {
+            Id = id;
+        }
+    }
 }

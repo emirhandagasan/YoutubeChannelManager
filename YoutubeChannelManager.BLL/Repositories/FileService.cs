@@ -22,52 +22,68 @@ namespace YoutubeChannelManager.BLL.Repositories
         }
 
 
-        public async Task ImportCsvAsync(Stream fileStream)
+        public async Task<int> ImportCsvAsync(Stream fileStream)
         {
             using var reader = new StreamReader(fileStream);
             using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
             var records = csv.GetRecords<Channel>().ToList();
+
+            int importedCount = 0;
+
             foreach (var record in records)
             {
                 bool exists = await _channelRepository.ExistsByNameAsync(record.ChannelName);
 
-                if (string.IsNullOrWhiteSpace(record.ChannelName))
+                if (exists)
                     continue;
 
-                if (exists)
+                if (string.IsNullOrWhiteSpace(record.ChannelName))
                     continue;
 
                 record.Id = Guid.NewGuid();
                 record.CreatedAt = DateTime.UtcNow;
+
                 await _channelRepository.CreateAsync(record);
+                importedCount++;
             }
+
+            return importedCount;
         }
 
-        public async Task ImportXlsxAsync(Stream fileStream)
+
+        public async Task<int> ImportXlsxAsync(Stream fileStream)
         {
             var records = MiniExcel.Query<Channel>(fileStream).ToList();
+            int importedCount = 0;
 
             foreach (var record in records)
             {
                 bool exists = await _channelRepository.ExistsByNameAsync(record.ChannelName);
 
-                if (string.IsNullOrWhiteSpace(record.ChannelName))
+                if (exists)
                     continue;
 
-                if (exists)
+                if (string.IsNullOrWhiteSpace(record.ChannelName))
                     continue;
 
                 record.Id = Guid.NewGuid();
                 record.CreatedAt = DateTime.UtcNow;
+
                 await _channelRepository.CreateAsync(record);
+                importedCount++;
             }
+
+            return importedCount;
         }
 
 
-        public async Task ImportCsvFolderAsync(string folderPath)
+        public async Task<(int ImportedCount, int ProcessedFileCount)> ImportCsvFolderAsync(string folderPath)
         {
             if (!Directory.Exists(folderPath))
                 throw new DirectoryNotFoundException($"Folder not found: {folderPath}");
+
+            int importedCount = 0;
+            int processedFileCount = 0;
 
             foreach (var file in Directory.EnumerateFiles(folderPath, "*.csv", SearchOption.TopDirectoryOnly))
             {
@@ -75,6 +91,8 @@ namespace YoutubeChannelManager.BLL.Repositories
                 using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
 
                 var records = csv.GetRecords<Channel>().ToList();
+                bool fileHadValidChannels = false;
+
                 foreach (var record in records)
                 {
                     if (string.IsNullOrWhiteSpace(record.ChannelName))
@@ -85,36 +103,58 @@ namespace YoutubeChannelManager.BLL.Repositories
 
                     record.Id = Guid.NewGuid();
                     record.CreatedAt = DateTime.UtcNow;
+
                     await _channelRepository.CreateAsync(record);
+                    
+                    importedCount++;
+                    fileHadValidChannels = true;
                 }
-            };
+
+                if (fileHadValidChannels)
+                    processedFileCount++;
+            }
+
+            return (importedCount, processedFileCount);
         }
 
 
-        public async Task ImportXlsxFolderAsync(string folderPath)
+        public async Task<(int ImportedCount, int ProcessedFileCount)> ImportXlsxFolderAsync(string folderPath)
         {
             if (!Directory.Exists(folderPath))
                 throw new DirectoryNotFoundException($"Folder not found: {folderPath}");
+
+            int importedCount = 0;
+            int processedFileCount = 0;
 
             foreach (var file in Directory.EnumerateFiles(folderPath, "*.xlsx", SearchOption.TopDirectoryOnly))
             {
                 using var reader = File.OpenRead(file);
                 var records = MiniExcel.Query<Channel>(reader).ToList();
+                bool fileHadValidChannels = false;
 
                 foreach (var record in records)
                 {
-                    if (string.IsNullOrWhiteSpace(record.ChannelName))
+                    if (await _channelRepository.ExistsByNameAsync(record.ChannelName))
                         continue;
 
-                    if (await _channelRepository.ExistsByNameAsync(record.ChannelName))
+                    if (string.IsNullOrWhiteSpace(record.ChannelName))
                         continue;
 
                     record.Id = Guid.NewGuid();
                     record.CreatedAt = DateTime.UtcNow;
+
                     await _channelRepository.CreateAsync(record);
+                    importedCount++;
+                    fileHadValidChannels = true;
                 }
+
+                if (fileHadValidChannels)
+                    processedFileCount++;
             }
+
+            return (importedCount, processedFileCount);
         }
+
 
 
         public string ExportChannelsToCsv(IEnumerable<Channel> channels)

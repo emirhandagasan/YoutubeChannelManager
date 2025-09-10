@@ -9,7 +9,7 @@ using YoutubeChannelManager.DAL.Models;
 
 namespace YoutubeChannelManager.BLL.Features.Channels.Queries.GetByIdChannel
 {
-    public class GetChannelByIdHandler : IRequestHandler<GetChannelByIdQuery, Channel?>
+    public class GetChannelByIdHandler : IRequestHandler<GetChannelByIdQuery, GetChannelByIdResponse?>
     {
         private readonly IChannelRepository _channelRepository;
 
@@ -18,9 +18,22 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Queries.GetByIdChannel
             _channelRepository = channelRepository;
         }
 
-        public async Task<Channel?> Handle(GetChannelByIdQuery request, CancellationToken cancellationToken)
+        public async Task<GetChannelByIdResponse?> Handle(GetChannelByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _channelRepository.GetByIdAsync(request.Id);
+            var channel = await _channelRepository.GetByIdAsync(request.Id);
+
+            if (channel == null)
+                return null;
+
+            return new GetChannelByIdResponse
+            {
+                Id = channel.Id,
+                ChannelName = channel.ChannelName,
+                Category = channel.Category,
+                Subscribers = channel.Subscribers,
+                IsActive = channel.IsActive,
+                CreatedAt = channel.CreatedAt
+            };
         }
     }
 }

@@ -8,19 +8,26 @@ using YoutubeChannelManager.BLL.Interfaces;
 
 namespace YoutubeChannelManager.BLL.Features.Files.Commands.ImportXlsxFolder
 {
-    public class ImportXlsxFolderHandler : IRequestHandler<ImportXlsxFolderCommand>
+    public class ImportXlsxFolderCommandHandler : IRequestHandler<ImportXlsxFolderCommand, ImportXlsxFolderResponse>
     {
         private readonly IFileService _fileService;
 
-        public ImportXlsxFolderHandler(IFileService fileService)
+        public ImportXlsxFolderCommandHandler(IFileService fileService)
         {
             _fileService = fileService;
         }
 
-        public async Task<Unit> Handle(ImportXlsxFolderCommand request, CancellationToken cancellationToken)
+        public async Task<ImportXlsxFolderResponse> Handle(ImportXlsxFolderCommand request, CancellationToken cancellationToken)
         {
-            await _fileService.ImportXlsxFolderAsync(request.FolderPath);
-            return Unit.Value;
+            var (importedCount, processedFileCount) = await _fileService.ImportXlsxFolderAsync(request.FolderPath);
+
+            return new ImportXlsxFolderResponse
+            {
+                Success = true,
+                ImportedCount = importedCount,
+                ProcessedFileCount = processedFileCount,
+                Message = $"{importedCount} channels were imported from {processedFileCount} .xlsx files in the folder."
+            };
         }
     }
 }

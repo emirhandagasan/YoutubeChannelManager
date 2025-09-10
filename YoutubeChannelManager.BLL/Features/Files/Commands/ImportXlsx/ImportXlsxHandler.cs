@@ -8,19 +8,25 @@ using YoutubeChannelManager.BLL.Interfaces;
 
 namespace YoutubeChannelManager.BLL.Features.Files.Commands.ImportXlsx
 {
-    public class ImportXlsxHandler : IRequestHandler<ImportXlsxCommand>
+    public class ImportXlsxCommandHandler : IRequestHandler<ImportXlsxCommand, ImportXlsxResponse>
     {
         private readonly IFileService _fileService;
 
-        public ImportXlsxHandler(IFileService fileService)
+        public ImportXlsxCommandHandler(IFileService fileService)
         {
             _fileService = fileService;
         }
 
-        public async Task<Unit> Handle(ImportXlsxCommand request, CancellationToken cancellationToken)
+        public async Task<ImportXlsxResponse> Handle(ImportXlsxCommand request, CancellationToken cancellationToken)
         {
-            await _fileService.ImportXlsxAsync(request.FileStream);
-            return Unit.Value;
+            var count = await _fileService.ImportXlsxAsync(request.FileStream);
+
+            return new ImportXlsxResponse
+            {
+                Success = true,
+                ImportedCount = count,
+                Message = $"{count} channels imported from XLSX."
+            };
         }
     }
 }

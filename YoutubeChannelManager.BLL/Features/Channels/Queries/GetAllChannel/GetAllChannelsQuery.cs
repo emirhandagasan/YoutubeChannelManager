@@ -9,5 +9,13 @@ using YoutubeChannelManager.DAL.Models;
 
 namespace YoutubeChannelManager.BLL.Features.Channels.Queries.GetAllChannel
 {
-    public record GetAllChannelsQuery(QueryObject Query) : IRequest<IEnumerable<Channel>>;
+    public class GetAllChannelsQuery : IRequest<IEnumerable<GetAllChannelsResponse>>
+    {
+        public QueryObject Query { get; }
+
+        public GetAllChannelsQuery(QueryObject query)
+        {
+            Query = query;
+        }
+    }
 }

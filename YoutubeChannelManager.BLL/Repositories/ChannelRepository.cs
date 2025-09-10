@@ -110,7 +110,7 @@ namespace YoutubeChannelManager.BLL.Repositories
         public async Task<bool> ExistsByNameAsync(string name)
         {
             return await _db.Channels
-                .AnyAsync(c => c.ChannelName.ToLower() == name.ToLower());
+                .AnyAsync(c => EF.Functions.ILike(c.ChannelName, name));
         }
     }
 }

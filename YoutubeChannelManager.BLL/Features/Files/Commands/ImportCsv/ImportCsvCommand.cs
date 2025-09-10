@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace YoutubeChannelManager.BLL.Features.Files.Commands.ImportCsv
 {
-    public record ImportCsvCommand(Stream FileStream) : IRequest;
+    public record ImportCsvCommand(Stream FileStream) : IRequest<ImportCsvResponse>;
 }
