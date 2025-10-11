@@ -32,173 +32,345 @@ namespace YoutubeChannelManager.Controllers
     {
         private readonly IFileService _fileService;
         private readonly IMediator _mediator;
+        private readonly ILogger<ChannelsController> _logger;
 
-        public ChannelsController(IFileService fileService, IMediator mediator)
+        public ChannelsController(
+            IFileService fileService, 
+            IMediator mediator,
+            ILogger<ChannelsController> logger)
         {
             _fileService = fileService;
             _mediator = mediator;
+            _logger = logger;
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
-            var response = await _mediator.Send(new GetAllChannelsQuery(query));
-            return Ok(response);
+            try
+            {
+                _logger.LogInformation("GetAll channels request received with query: {@Query}", query);
+
+                var response = await _mediator.Send(new GetAllChannelsQuery(query));
+
+                _logger.LogInformation("GetAll channels completed. Count: {Count}", response.Count());
+                
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetAll channels");
+                throw;
+            }
         }
-
-
 
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var response = await _mediator.Send(new GetChannelByIdQuery(id));
+            try
+            {
+                _logger.LogInformation("GetById request received. Id: {ChannelId}", id);
 
-            if (response == null)
-                return NotFound("Channel not found.");
+                var response = await _mediator.Send(new GetChannelByIdQuery(id));
 
-            return Ok(response);
+                if (response == null)
+                {
+                    _logger.LogWarning("Channel not found. Id: {ChannelId}", id);
+                    return NotFound("Channel not found.");
+                }
+
+                _logger.LogInformation("GetById completed. Id: {ChannelId}, Name: {ChannelName}", 
+                    response.Id, response.ChannelName);
+                    
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetById. Id: {ChannelId}", id);
+                throw;
+            }
         }
-
-
 
         [HttpPost]
         [Authorize(Roles = "SuperAdmin,Admin,Editor")]
         public async Task<IActionResult> Create([FromBody] CreateChannelRequestDto channelDto)
         {
-            var createCommand = new CreateChannelCommand
-            (
-            channelDto.ChannelName,
-            channelDto.Category,
-            channelDto.Subscribers,
-            channelDto.IsActive);
+            try
+            {
+                _logger.LogInformation("Create channel request received. Name: {ChannelName}", 
+                    channelDto.ChannelName);
 
-            var response = await _mediator.Send(createCommand);
+                var createCommand = new CreateChannelCommand(
+                    channelDto.ChannelName,
+                    channelDto.Category,
+                    channelDto.Subscribers,
+                    channelDto.IsActive);
 
-            return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+                var response = await _mediator.Send(createCommand);
+
+                _logger.LogInformation("Channel created successfully. Id: {ChannelId}, Name: {ChannelName}", 
+                    response.Id, response.ChannelName);
+
+                return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating channel. Name: {ChannelName}", channelDto.ChannelName);
+                throw;
+            }
         }
-
-
 
         [HttpPut]
         [Route("{id:Guid}")]
         [Authorize(Roles = "SuperAdmin,Admin,Editor")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateChannelRequestDto updateChannelRequestDto)
+        public async Task<IActionResult> Update(
+            [FromRoute] Guid id, 
+            [FromBody] UpdateChannelRequestDto updateChannelRequestDto)
         {
-            var updateChannelCommand = new UpdateChannelCommand(
-                id,
-                updateChannelRequestDto.ChannelName,
-                updateChannelRequestDto.Category,
-                updateChannelRequestDto.Subscribers,
-                updateChannelRequestDto.IsActive);
+            try
+            {
+                _logger.LogInformation("Update channel request received. Id: {ChannelId}", id);
 
-            var response = await _mediator.Send(updateChannelCommand);
+                var updateChannelCommand = new UpdateChannelCommand(
+                    id,
+                    updateChannelRequestDto.ChannelName,
+                    updateChannelRequestDto.Category,
+                    updateChannelRequestDto.Subscribers,
+                    updateChannelRequestDto.IsActive);
 
-            if (response == null)
-                return NotFound();
+                var response = await _mediator.Send(updateChannelCommand);
 
-            return Ok(response);
+                if (response == null)
+                {
+                    _logger.LogWarning("Channel not found for update. Id: {ChannelId}", id);
+                    return NotFound();
+                }
+
+                _logger.LogInformation("Channel updated successfully. Id: {ChannelId}, Name: {ChannelName}", 
+                    response.Id, response.ChannelName);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating channel. Id: {ChannelId}", id);
+                throw;
+            }
         }
-
-
 
         [HttpDelete]
         [Route("{id:Guid}")]
         [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var response = await _mediator.Send(new DeleteChannelCommand(id));
+            try
+            {
+                _logger.LogInformation("Delete channel request received. Id: {ChannelId}", id);
+                
+                var response = await _mediator.Send(new DeleteChannelCommand(id));
 
-            if (response == null)
-                return NotFound("Channel not found.");
+                if (response == null)
+                {
+                    _logger.LogWarning("Channel not found for deletion. Id: {ChannelId}", id);
+                    return NotFound("Channel not found.");
+                }
 
-            return Ok(response);
+                _logger.LogInformation("Channel deleted successfully. Id: {ChannelId}, Name: {ChannelName}", 
+                    response.Id, response.ChannelName);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting channel. Id: {ChannelId}", id);
+                throw;
+            }
         }
-
-
 
         [HttpPost("import/csv")]
         [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> ImportCsv(IFormFile file)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("File is empty or not provided.");
+            try
+            {
+                _logger.LogInformation("CSV import request received. FileName: {FileName}, Size: {FileSize}", 
+                    file?.FileName, file?.Length);
 
-            if (!Path.GetExtension(file.FileName).Equals(".csv", StringComparison.OrdinalIgnoreCase))
-                return BadRequest("Only .csv files are supported.");
+                if (file == null || file.Length == 0)
+                {
+                    _logger.LogWarning("CSV import failed: File is empty or not provided");
+                    return BadRequest("File is empty or not provided.");
+                }
 
-            var result = await _mediator.Send(new ImportCsvCommand(file.OpenReadStream()));
-            return Ok(result);
+                if (!Path.GetExtension(file.FileName).Equals(".csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.LogWarning("CSV import failed: Invalid file extension. FileName: {FileName}", 
+                        file.FileName);
+                    return BadRequest("Only .csv files are supported.");
+                }
+
+                var result = await _mediator.Send(new ImportCsvCommand(file.OpenReadStream()));
+                
+                _logger.LogInformation("CSV import completed. ImportedCount: {ImportedCount}", 
+                    result.ImportedCount);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during CSV import");
+                throw;
+            }
         }
-
-
 
         [HttpPost("import/excel")]
         [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> ImportXlsx(IFormFile file)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("File is empty or not provided.");
+            try
+            {
+                _logger.LogInformation("XLSX import request received. FileName: {FileName}, Size: {FileSize}", 
+                    file?.FileName, file?.Length);
 
-            if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
-                return BadRequest("Only .xlsx files are supported.");
+                if (file == null || file.Length == 0)
+                {
+                    _logger.LogWarning("XLSX import failed: File is empty or not provided");
+                    return BadRequest("File is empty or not provided.");
+                }
 
-            var result = await _mediator.Send(new ImportXlsxCommand(file.OpenReadStream()));
-            return Ok(result);
+                if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.LogWarning("XLSX import failed: Invalid file extension. FileName: {FileName}", 
+                        file.FileName);
+                    return BadRequest("Only .xlsx files are supported.");
+                }
+
+                var result = await _mediator.Send(new ImportXlsxCommand(file.OpenReadStream()));
+                
+                _logger.LogInformation("XLSX import completed. ImportedCount: {ImportedCount}", 
+                    result.ImportedCount);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during XLSX import");
+                throw;
+            }
         }
-
-
 
         [HttpPost("import/folder/csv")]
         [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> ImportCsvFolder([FromBody] FolderPathRequestDto request)
         {
-            if (request is null || string.IsNullOrWhiteSpace(request.FolderPath))
-                return BadRequest("FolderPath is empty or not provided.");
+            try
+            {
+                _logger.LogInformation("CSV folder import request received. FolderPath: {FolderPath}", 
+                    request?.FolderPath);
 
-            if (!Directory.Exists(request.FolderPath))
-                return BadRequest("Folder not found.");
+                if (request is null || string.IsNullOrWhiteSpace(request.FolderPath))
+                {
+                    _logger.LogWarning("CSV folder import failed: FolderPath is empty");
+                    return BadRequest("FolderPath is empty or not provided.");
+                }
 
+                if (!Directory.Exists(request.FolderPath))
+                {
+                    _logger.LogWarning("CSV folder import failed: Folder not found. Path: {FolderPath}", 
+                        request.FolderPath);
+                    return BadRequest("Folder not found.");
+                }
 
-            var anyCsv = Directory.EnumerateFiles(request.FolderPath, "*.csv", SearchOption.TopDirectoryOnly).Any();
-            if (!anyCsv)
-                return BadRequest("No .csv files found in the provided folder.");
+                var anyCsv = Directory.EnumerateFiles(request.FolderPath, "*.csv", SearchOption.TopDirectoryOnly).Any();
+                if (!anyCsv)
+                {
+                    _logger.LogWarning("CSV folder import failed: No CSV files found. Path: {FolderPath}", 
+                        request.FolderPath);
+                    return BadRequest("No .csv files found in the provided folder.");
+                }
 
-            var result = await _mediator.Send(new ImportCsvFolderCommand(request.FolderPath));
-            return Ok(result);
+                var result = await _mediator.Send(new ImportCsvFolderCommand(request.FolderPath));
+                
+                _logger.LogInformation(
+                    "CSV folder import completed. ImportedCount: {ImportedCount}, ProcessedFiles: {ProcessedFiles}", 
+                    result.ImportedCount, result.ProcessedFileCount);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during CSV folder import");
+                throw;
+            }
         }
-
-
 
         [HttpPost("import/folder/xlsx")]
         [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> ImportXlsxFolder([FromBody] FolderPathRequestDto request)
         {
-            if (request is null || string.IsNullOrWhiteSpace(request.FolderPath))
-                return BadRequest("FolderPath is empty or not provided.");
+            try
+            {
+                _logger.LogInformation("XLSX folder import request received. FolderPath: {FolderPath}", 
+                    request?.FolderPath);
 
-            if (!Directory.Exists(request.FolderPath))
-                return BadRequest("Folder not found.");
+                if (request is null || string.IsNullOrWhiteSpace(request.FolderPath))
+                {
+                    _logger.LogWarning("XLSX folder import failed: FolderPath is empty");
+                    return BadRequest("FolderPath is empty or not provided.");
+                }
 
-            var anyXlsx = Directory.EnumerateFiles(request.FolderPath, "*.xlsx", SearchOption.TopDirectoryOnly).Any();
-            if (!anyXlsx)
-                return BadRequest("No .xlsx files found in the provided folder.");
+                if (!Directory.Exists(request.FolderPath))
+                {
+                    _logger.LogWarning("XLSX folder import failed: Folder not found. Path: {FolderPath}", 
+                        request.FolderPath);
+                    return BadRequest("Folder not found.");
+                }
 
-            var result = await _mediator.Send(new ImportXlsxFolderCommand(request.FolderPath));
-            return Ok(result);
+                var anyXlsx = Directory.EnumerateFiles(request.FolderPath, "*.xlsx", SearchOption.TopDirectoryOnly).Any();
+                if (!anyXlsx)
+                {
+                    _logger.LogWarning("XLSX folder import failed: No XLSX files found. Path: {FolderPath}", 
+                        request.FolderPath);
+                    return BadRequest("No .xlsx files found in the provided folder.");
+                }
+
+                var result = await _mediator.Send(new ImportXlsxFolderCommand(request.FolderPath));
+                
+                _logger.LogInformation(
+                    "XLSX folder import completed. ImportedCount: {ImportedCount}, ProcessedFiles: {ProcessedFiles}", 
+                    result.ImportedCount, result.ProcessedFileCount);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during XLSX folder import");
+                throw;
+            }
         }
-
-
 
         [HttpGet("export")]
         public async Task<IActionResult> ExportChannels(
-        [FromQuery] QueryObject query,
-        [FromQuery] string format = "csv")
+            [FromQuery] QueryObject query,
+            [FromQuery] string format = "csv")
         {
-            var result = await _mediator.Send(new ExportChannelsQuery(query, format));
-            
-            return File(result.FileContent, result.ContentType, result.FileName);
+            try
+            {
+                _logger.LogInformation("Export channels request received. Format: {Format}, Query: {@Query}", 
+                    format, query);
+
+                var result = await _mediator.Send(new ExportChannelsQuery(query, format));
+                
+                _logger.LogInformation("Export completed successfully. Format: {Format}, FileName: {FileName}", 
+                    format, result.FileName);
+
+                return File(result.FileContent, result.ContentType, result.FileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during channel export. Format: {Format}", format);
+                throw;
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,28 +13,49 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Queries.GetByIdChannel
     public class GetChannelByIdHandler : IRequestHandler<GetChannelByIdQuery, GetChannelByIdResponse?>
     {
         private readonly IChannelRepository _channelRepository;
+        private readonly ILogger<GetChannelByIdHandler> _logger;
 
-        public GetChannelByIdHandler(IChannelRepository channelRepository)
+        public GetChannelByIdHandler(
+            IChannelRepository channelRepository,
+            ILogger<GetChannelByIdHandler> logger)
         {
             _channelRepository = channelRepository;
+            _logger = logger;
         }
 
         public async Task<GetChannelByIdResponse?> Handle(GetChannelByIdQuery request, CancellationToken cancellationToken)
         {
-            var channel = await _channelRepository.GetByIdAsync(request.Id);
-
-            if (channel == null)
-                return null;
-
-            return new GetChannelByIdResponse
+            try
             {
-                Id = channel.Id,
-                ChannelName = channel.ChannelName,
-                Category = channel.Category,
-                Subscribers = channel.Subscribers,
-                IsActive = channel.IsActive,
-                CreatedAt = channel.CreatedAt
-            };
+                _logger.LogInformation("Fetching channel by Id: {ChannelId}", request.Id);
+
+                var channel = await _channelRepository.GetByIdAsync(request.Id);
+
+                if (channel == null)
+                {
+                    _logger.LogWarning("Channel not found. Id: {ChannelId}", request.Id);
+                    return null;
+                }
+
+                _logger.LogInformation("Channel retrieved successfully. Id: {ChannelId}, Name: {ChannelName}", 
+                    channel.Id, channel.ChannelName);
+
+                return new GetChannelByIdResponse
+                {
+                    Id = channel.Id,
+                    ChannelName = channel.ChannelName,
+                    Category = channel.Category,
+                    Subscribers = channel.Subscribers,
+                    IsActive = channel.IsActive,
+                    CreatedAt = channel.CreatedAt
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching channel by Id: {ChannelId}", request.Id);
+                throw;
+            }
         }
     }
 }
+

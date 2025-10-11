@@ -377,3 +377,7 @@ FodyWeavers.xsd
 # Local secrets & config
 appsettings.Development.json
 appsettings.Production.json
+
+# Serilog log files
+Logs/
+*.log

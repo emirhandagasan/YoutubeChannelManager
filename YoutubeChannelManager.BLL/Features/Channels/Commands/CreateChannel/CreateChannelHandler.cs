@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,34 +13,63 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Commands.CreateChannel
      public class CreateChannelHandler : IRequestHandler<CreateChannelCommand, CreateChannelResponse>
     {
         private readonly IChannelRepository _channelRepository;
+        private readonly ILogger<CreateChannelHandler> _logger;
 
-        public CreateChannelHandler(IChannelRepository channelRepository)
+        public CreateChannelHandler(
+            IChannelRepository channelRepository,
+            ILogger<CreateChannelHandler> logger)
         {
             _channelRepository = channelRepository;
+            _logger = logger;
         }
 
         public async Task<CreateChannelResponse> Handle(CreateChannelCommand request, CancellationToken cancellationToken)
         {
-            var channel = new Channel
+            try
             {
-                Id = Guid.NewGuid(),
-                ChannelName = request.ChannelName,
-                Category = request.Category,
-                Subscribers = request.Subscribers,
-                IsActive = request.IsActive,
-                CreatedAt = DateTime.UtcNow
-            };
+                _logger.LogInformation(
+                    "Creating new channel. Name: {ChannelName}, Category: {Category}, Subscribers: {Subscribers}",
+                    request.ChannelName,
+                    request.Category,
+                    request.Subscribers
+                );
 
-            await _channelRepository.CreateAsync(channel);
+                var channel = new Channel
+                {
+                    Id = Guid.NewGuid(),
+                    ChannelName = request.ChannelName,
+                    Category = request.Category,
+                    Subscribers = request.Subscribers,
+                    IsActive = request.IsActive,
+                    CreatedAt = DateTime.UtcNow
+                };
 
-            return new CreateChannelResponse
+                await _channelRepository.CreateAsync(channel);
+
+                _logger.LogInformation(
+                    "Channel created successfully. Id: {ChannelId}, Name: {ChannelName}",
+                    channel.Id,
+                    channel.ChannelName
+                );
+
+                return new CreateChannelResponse
+                {
+                    Id = channel.Id,
+                    ChannelName = channel.ChannelName,
+                    Category = channel.Category,
+                    Subscribers = channel.Subscribers,
+                    IsActive = channel.IsActive,
+                };
+            }
+            catch (Exception ex)
             {
-                Id = channel.Id,
-                ChannelName = channel.ChannelName,
-                Category = channel.Category,
-                Subscribers = channel.Subscribers,
-                IsActive = channel.IsActive,
-            };
+                _logger.LogError(
+                    ex,
+                    "Error creating channel. Name: {ChannelName}",
+                    request.ChannelName
+                );
+                throw;
+            }
         }
     }
 }
