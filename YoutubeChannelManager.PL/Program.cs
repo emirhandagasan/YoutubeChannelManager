@@ -99,6 +99,18 @@ try
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+    // Redis Cache Configuration
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        var redisConnection = builder.Configuration.GetConnectionString("Redis");
+        options.Configuration = redisConnection;
+        options.InstanceName = "youtube_";
+    });
+
+    // Cache Service
+    builder.Services.AddScoped<ICacheService, RedisCacheService>();
+  
+
     // FluentValidation
     builder.Services.AddValidatorsFromAssemblyContaining<CreateChannelCommandValidator>();
     builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -221,4 +233,3 @@ finally
 {
     Log.CloseAndFlush();
 }
-

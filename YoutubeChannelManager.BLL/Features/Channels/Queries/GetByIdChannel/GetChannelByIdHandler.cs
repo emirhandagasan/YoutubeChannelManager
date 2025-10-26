@@ -13,13 +13,16 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Queries.GetByIdChannel
     public class GetChannelByIdHandler : IRequestHandler<GetChannelByIdQuery, GetChannelByIdResponse?>
     {
         private readonly IChannelRepository _channelRepository;
+        private readonly ICacheService _cacheService;
         private readonly ILogger<GetChannelByIdHandler> _logger;
 
         public GetChannelByIdHandler(
             IChannelRepository channelRepository,
+            ICacheService cacheService,
             ILogger<GetChannelByIdHandler> logger)
         {
             _channelRepository = channelRepository;
+            _cacheService = cacheService;
             _logger = logger;
         }
 
@@ -27,8 +30,18 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Queries.GetByIdChannel
         {
             try
             {
-                _logger.LogInformation("Fetching channel by Id: {ChannelId}", request.Id);
+                var cacheKey = $"channel:{request.Id}";
 
+
+                var cachedChannel = await _cacheService.GetAsync<GetChannelByIdResponse>(cacheKey);
+                if (cachedChannel != null)
+                {
+                    _logger.LogInformation("Channel from cache. Id: {ChannelId}", request.Id);
+                    return cachedChannel;
+                }
+
+
+                _logger.LogInformation("Fetching channel from database. Id: {ChannelId}", request.Id);
                 var channel = await _channelRepository.GetByIdAsync(request.Id);
 
                 if (channel == null)
@@ -37,10 +50,8 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Queries.GetByIdChannel
                     return null;
                 }
 
-                _logger.LogInformation("Channel retrieved successfully. Id: {ChannelId}, Name: {ChannelName}", 
-                    channel.Id, channel.ChannelName);
 
-                return new GetChannelByIdResponse
+                var response = new GetChannelByIdResponse
                 {
                     Id = channel.Id,
                     ChannelName = channel.ChannelName,
@@ -49,10 +60,17 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Queries.GetByIdChannel
                     IsActive = channel.IsActive,
                     CreatedAt = channel.CreatedAt
                 };
+
+
+                await _cacheService.SetAsync(cacheKey, response, TimeSpan.FromMinutes(10));
+
+                _logger.LogInformation("Channel fetched and cached. Id: {ChannelId}", request.Id);
+                return response;
             }
+
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching channel by Id: {ChannelId}", request.Id);
+                _logger.LogError(ex, "Error fetching channel. Id: {ChannelId}", request.Id);
                 throw;
             }
         }

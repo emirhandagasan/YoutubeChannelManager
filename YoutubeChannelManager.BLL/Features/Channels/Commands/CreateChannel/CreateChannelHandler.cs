@@ -10,16 +10,19 @@ using YoutubeChannelManager.DAL.Models;
 
 namespace YoutubeChannelManager.BLL.Features.Channels.Commands.CreateChannel
 {
-     public class CreateChannelHandler : IRequestHandler<CreateChannelCommand, CreateChannelResponse>
+    public class CreateChannelHandler : IRequestHandler<CreateChannelCommand, CreateChannelResponse>
     {
         private readonly IChannelRepository _channelRepository;
+        private readonly ICacheService _cacheService;
         private readonly ILogger<CreateChannelHandler> _logger;
 
         public CreateChannelHandler(
             IChannelRepository channelRepository,
+            ICacheService cacheService,
             ILogger<CreateChannelHandler> logger)
         {
             _channelRepository = channelRepository;
+            _cacheService = cacheService;
             _logger = logger;
         }
 
@@ -27,12 +30,7 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Commands.CreateChannel
         {
             try
             {
-                _logger.LogInformation(
-                    "Creating new channel. Name: {ChannelName}, Category: {Category}, Subscribers: {Subscribers}",
-                    request.ChannelName,
-                    request.Category,
-                    request.Subscribers
-                );
+                _logger.LogInformation("Creating channel. Name: {ChannelName}", request.ChannelName);
 
                 var channel = new Channel
                 {
@@ -46,11 +44,10 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Commands.CreateChannel
 
                 await _channelRepository.CreateAsync(channel);
 
-                _logger.LogInformation(
-                    "Channel created successfully. Id: {ChannelId}, Name: {ChannelName}",
-                    channel.Id,
-                    channel.ChannelName
-                );
+
+                await _cacheService.RemoveAsync("channels:all");
+
+                _logger.LogInformation("Channel created. Id: {ChannelId}", channel.Id);
 
                 return new CreateChannelResponse
                 {
@@ -63,11 +60,7 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Commands.CreateChannel
             }
             catch (Exception ex)
             {
-                _logger.LogError(
-                    ex,
-                    "Error creating channel. Name: {ChannelName}",
-                    request.ChannelName
-                );
+                _logger.LogError(ex, "Error creating channel");
                 throw;
             }
         }

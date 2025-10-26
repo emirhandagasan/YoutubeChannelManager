@@ -14,13 +14,16 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Commands.UpdateChannel
     public class UpdateChannelHandler : IRequestHandler<UpdateChannelCommand, UpdateChannelResponse>
     {
         private readonly IChannelRepository _channelRepository;
+        private readonly ICacheService _cacheService;
         private readonly ILogger<UpdateChannelHandler> _logger;
 
         public UpdateChannelHandler(
             IChannelRepository channelRepository,
+            ICacheService cacheService,
             ILogger<UpdateChannelHandler> logger)
         {
             _channelRepository = channelRepository;
+            _cacheService = cacheService;
             _logger = logger;
         }
 
@@ -28,8 +31,7 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Commands.UpdateChannel
         {
             try
             {
-                _logger.LogInformation("Updating channel. Id: {ChannelId}, Name: {ChannelName}", 
-                    request.Id, request.ChannelName);
+                _logger.LogInformation("Updating channel. Id: {ChannelId}", request.Id);
 
                 var updateDto = new UpdateChannelRequestDto
                 {
@@ -43,12 +45,15 @@ namespace YoutubeChannelManager.BLL.Features.Channels.Commands.UpdateChannel
 
                 if (updatedChannel == null)
                 {
-                    _logger.LogWarning("Channel not found for update. Id: {ChannelId}", request.Id);
+                    _logger.LogWarning("Channel not found. Id: {ChannelId}", request.Id);
                     return null;
                 }
 
-                _logger.LogInformation("Channel updated successfully. Id: {ChannelId}, Name: {ChannelName}", 
-                    updatedChannel.Id, updatedChannel.ChannelName);
+                
+                await _cacheService.RemoveAsync($"channel:{request.Id}");  
+                await _cacheService.RemoveAsync("channels:all");            
+
+                _logger.LogInformation("Channel updated. Id: {ChannelId}", updatedChannel.Id);
 
                 return new UpdateChannelResponse
                 {
